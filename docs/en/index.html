@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinite Ananta — A City-Builder Life Sim That Grows While You Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e14;
+    --bg2:#0e151d;
+    --card:#121a24;
+    --card2:#0e151d;
+    --line:#1e2a38;
+    --text:#eef7f8;
+    --dim:#9fb4c0;
+    --dim2:#5d7280;
+    --brand:#00b7c3;
+    --brand-glow:#4dd8e0;
+    --chaos:#9b59b6;
+    --chaos-glow:#c77ee0;
+    --gold:#f2c14e;
+    --gold-deep:#e0a730;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Nunito', sans-serif;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(0,183,195,.14), transparent 45%),
+      radial-gradient(circle at 85% 0%, rgba(155,89,182,.12), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+  }
+  .orb{font-family:'Orbitron', sans-serif;}
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ───── NAV ───── */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    background:rgba(10,14,20,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{ max-width:1180px; margin:0 auto; padding:16px 32px; display:flex; align-items:center; justify-content:space-between;}
+  .brand{font-family:'Orbitron'; font-weight:900; font-size:1.05rem; color:var(--text); display:flex; gap:10px; align-items:center; letter-spacing:.02em;}
+  .brand .icon{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg, var(--brand), var(--chaos));
+    display:flex;align-items:center;justify-content:center;font-size:1.05rem;
+  }
+  .navlinks{display:flex; gap:28px; font-weight:800; color:var(--dim); font-size:0.86rem; align-items:center;}
+  .navlinks a:hover{color:var(--brand-glow);}
+  .navlang{border:1px solid var(--line); border-radius:20px; padding:5px 12px; font-size:0.76rem; font-weight:800;}
+  .navlang:hover{border-color:var(--brand);}
+  .navcta{
+    background:linear-gradient(90deg, var(--brand), var(--chaos)); color:#071016; border:none; padding:10px 20px; border-radius:12px;
+    font-weight:900; font-size:0.84rem;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .navcta:hover{transform:translateY(-1px); box-shadow:0 6px 20px -6px rgba(0,183,195,.6);}
+  @media (max-width:860px){ .navlinks a:not(.navlang){display:none;} }
+
+  /* ───── HERO ───── */
+  .hero{
+    min-height:94vh;
+    position:relative; overflow:hidden;
+    padding:150px 0 0;
+  }
+  .stars{position:absolute; inset:0; z-index:0; pointer-events:none;
+    background-image:radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.5), transparent),
+      radial-gradient(2px 2px at 70% 15%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1.5px 1.5px at 85% 55%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,.3), transparent),
+      radial-gradient(2px 2px at 55% 40%, rgba(255,255,255,.3), transparent);
+    opacity:.7;
+  }
+  .hero-grid{display:flex; align-items:center; gap:56px; position:relative; z-index:3; padding-bottom:70px;}
+  @media (max-width:900px){ .hero-grid{flex-direction:column; align-items:flex-start;} }
+
+  .lcol{flex:1; opacity:0; animation:rise .7s ease forwards .1s;}
+  .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(0,183,195,.1); border:1px solid rgba(0,183,195,.4); padding:7px 16px; border-radius:999px;
+    font-size:0.78rem; font-weight:800; color:var(--brand-glow); margin-bottom:24px;
+  }
+  .hero h1{
+    font-size:clamp(2.1rem, 4.2vw, 3rem); line-height:1.35; color:var(--text); font-weight:900;
+  }
+  .hero h1 .accent{
+    background:linear-gradient(90deg, var(--brand-glow), var(--chaos-glow));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p.lead{
+    margin-top:22px; font-size:1.05rem; line-height:1.85; color:var(--dim); font-weight:700; max-width:46ch;
+  }
+  .ctas{display:flex; gap:14px; margin-top:32px; flex-wrap:wrap;}
+  .btn{
+    font-weight:900; padding:15px 28px; border-radius:14px; font-size:0.94rem; border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn1{background:linear-gradient(90deg, var(--brand), var(--chaos)); color:#071016;}
+  .btn1:hover{transform:translateY(-2px); box-shadow:0 10px 30px -8px rgba(0,183,195,.55);}
+  .btn2{background:rgba(255,255,255,.04); color:var(--text); border-color:var(--line);}
+  .btn2:hover{border-color:var(--brand); transform:translateY(-2px);}
+
+  .stats{display:flex; gap:34px; margin-top:44px; flex-wrap:wrap;}
+  .stat b{font-family:'Orbitron'; font-size:1.4rem; color:var(--brand-glow); display:block;}
+  .stat span{font-size:0.76rem; color:var(--dim2); font-weight:800;}
+
+  .rcol{flex:1; position:relative; opacity:0; animation:rise .8s ease forwards .25s; padding-top:10px;}
+  .shelf{
+    background:linear-gradient(160deg, var(--card), var(--card2)); border:1px solid var(--line); border-radius:18px;
+    padding:24px; box-shadow:0 20px 60px -20px rgba(0,0,0,.6);
+    position:relative; z-index:2; margin-top:14px; overflow:hidden;
+  }
+  .shelf::before{content:""; position:absolute; inset:0 0 auto 0; height:3px; background:linear-gradient(90deg, var(--brand), var(--chaos)); opacity:.9;}
+  .shelf-label{font-family:'Orbitron'; font-size:0.72rem; color:var(--dim); margin-bottom:14px; letter-spacing:.05em;}
+  .shelf-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
+  .item{
+    aspect-ratio:1; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:1.6rem;
+    transition:transform .2s ease;
+  }
+  .item:hover{transform:scale(1.08); border-color:var(--brand);}
+  .tower-float{position:absolute; bottom:-30px; right:-10px; font-size:4rem; z-index:1; animation:bob 4s ease-in-out infinite; opacity:.9;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  @keyframes rise{from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);}}
+
+  .reveal{opacity:0; transform:translateY(22px); transition:opacity .65s ease, transform .65s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ───── LOOP ───── */
+  section{padding:104px 0;}
+  .sec-label{
+    display:inline-block; font-family:'Orbitron'; font-size:0.72rem; color:var(--brand-glow);
+    background:rgba(0,183,195,.1); padding:6px 16px; border-radius:999px; margin-bottom:20px; letter-spacing:.04em;
+  }
+  .sec-title{
+    font-size:clamp(1.6rem, 3vw, 2.2rem); line-height:1.4; max-width:24ch; color:var(--text); font-weight:900;
+  }
+  .sec-sub{margin-top:18px; font-size:1rem; line-height:1.8; color:var(--dim); max-width:58ch; font-weight:600;}
+
+  .loop-grid{margin-top:56px; display:grid; grid-template-columns:repeat(4,1fr); gap:22px;}
+  @media (max-width:920px){ .loop-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:540px){ .loop-grid{grid-template-columns:1fr;} }
+  .loop-card{
+    background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .loop-card:hover{transform:translateY(-3px); border-color:var(--brand);}
+  .loop-card .stage{font-family:'Orbitron'; font-size:0.68rem; color:var(--dim2); letter-spacing:.05em;}
+  .loop-card .icn{
+    width:52px;height:52px; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:12px;
+    display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:14px 0 14px;
+  }
+  .loop-card h3{font-size:1.02rem; margin-bottom:10px; color:var(--text); font-weight:900;}
+  .loop-card p{font-size:0.86rem; line-height:1.75; color:var(--dim); font-weight:600;}
+
+  /* ───── FEATURES ───── */
+  .features{background:var(--bg2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .feature{display:flex; align-items:center; gap:60px; padding:60px 0;}
+  .feature.rev{flex-direction:row-reverse;}
+  @media (max-width:900px){ .feature, .feature.rev{flex-direction:column;} }
+  .feature > div{flex:1;}
+  .ftag{
+    display:inline-block; font-family:'Orbitron'; font-size:0.66rem; color:#071016;
+    background:var(--gold); padding:5px 14px; border-radius:999px; margin-bottom:16px; letter-spacing:.05em; font-weight:900;
+  }
+  .feature h3{font-size:1.32rem; line-height:1.5; margin-bottom:16px; color:var(--text); font-weight:900;}
+  .feature p{font-size:0.94rem; line-height:1.85; color:var(--dim); font-weight:600;}
+  .feature ul{margin-top:18px; display:flex; flex-direction:column; gap:10px;}
+  .feature li{font-size:0.87rem; color:var(--dim); display:flex; gap:10px; font-weight:700;}
+  .feature li::before{content:"◆"; font-size:0.62rem; color:var(--brand-glow); margin-top:5px;}
+
+  .visual-card{
+    background:var(--card); border:1px solid var(--line); border-radius:20px; padding:24px; position:relative; overflow:hidden;
+  }
+  .visual-card::before{content:""; position:absolute; inset:0 0 auto 0; height:3px; background:linear-gradient(90deg, var(--brand), var(--chaos)); opacity:.85;}
+  .fv-line{display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px dashed var(--line); font-size:0.85rem; font-weight:700; color:var(--dim); gap:12px;}
+  .fv-line:last-child{border-bottom:none;}
+  .fv-line .v{font-family:'Orbitron'; color:var(--brand-glow); font-weight:700; text-align:right;}
+
+  /* ───── COMMANDS ───── */
+  .cmd-grid{margin-top:56px; display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media (max-width:880px){ .cmd-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .cmd-grid{grid-template-columns:1fr;} }
+  .cmd{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; transition:transform .2s ease, border-color .2s ease;}
+  .cmd:hover{transform:translateY(-2px); border-color:var(--chaos);}
+  .cmd .tag{font-family:'Orbitron'; font-size:0.84rem; color:var(--brand-glow); margin-bottom:8px; display:block; font-weight:700;}
+  .cmd p{font-size:0.82rem; color:var(--dim); line-height:1.65; font-weight:600;}
+
+  /* ───── CTA ───── */
+  .cta-section{text-align:center; background:linear-gradient(180deg, var(--bg), var(--bg2)); border-top:1px solid var(--line);}
+  .cta-section .sec-label, .cta-section .sec-title, .cta-section .sec-sub{margin-left:auto; margin-right:auto;}
+  .cta-section .sec-title{max-width:20ch;}
+  .cta-buttons{display:flex; gap:16px; justify-content:center; margin-top:34px; flex-wrap:wrap;}
+
+  footer{border-top:1px solid var(--line); padding:36px 0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; font-size:0.78rem; color:var(--dim2); font-weight:700;}
+  .fmark{font-family:'Orbitron'; color:var(--dim); font-weight:700;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="icon">🌆</span>Infinite Ananta</div>
+    <div class="navlinks">
+      <a href="#loop">How it Works</a>
+      <a href="#features">Features</a>
+      <a href="#commands">Commands</a>
+      <a class="navlang" href="../">JP</a>
+    </div>
+    <a class="navcta" href="#cta">Join Now</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="stars"></div>
+  <div class="wrap hero-grid">
+    <div class="lcol">
+      <div class="badge">🌀 Built for Discord · Runs 24/7, automatically</div>
+      <h1>Your city grows<br>every time you <span class="accent">chat</span>.</h1>
+      <p class="lead">Earn points to grow a shared tower, pull gacha for cards, fish, dispatch idle expeditions, and battle it out — all inside one Discord server. This is Infinite Ananta's city-building life sim.</p>
+      <div class="ctas">
+        <a class="btn btn1" href="#cta">Join Now</a>
+        <a class="btn btn2" href="#loop">See How it Works</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>2 Currencies</b><span>Chaos Points &amp; Coins, each with a role</span></div>
+        <div class="stat"><b>100+ Entries</b><span>Gacha cards, items &amp; fishdex to collect</span></div>
+        <div class="stat"><b>24/7</b><span>Auto-running events &amp; fishing tournaments</span></div>
+      </div>
+    </div>
+    <div class="rcol">
+      <div class="shelf">
+        <div class="shelf-label orb">🎴 GACHA POOL</div>
+        <div class="shelf-grid">
+          <div class="item">🎴</div><div class="item">🗡️</div><div class="item">🛡️</div><div class="item">💍</div>
+          <div class="item">🎩</div><div class="item">🔮</div><div class="item">🏆</div><div class="item">🪙</div>
+        </div>
+      </div>
+      <div class="tower-float">🗼</div>
+    </div>
+  </div>
+</header>
+
+<section id="loop">
+  <div class="wrap">
+    <div class="sec-label reveal">A Day in Infinite Ananta</div>
+    <h2 class="sec-title reveal">Chat, build, pull, dispatch, fight.</h2>
+    <p class="sec-sub reveal">The loop never really stops. Chaos Points from chatting grow the tower, cards pulled from gacha go to work in exploration and battle, and leftover items flow back through trading and crafting.</p>
+
+    <div class="loop-grid">
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 01</div>
+        <div class="icn">💬</div>
+        <h3>Chat</h3>
+        <p>Just talking earns Chaos Points — 1–5 per message, with a rare "Chaos Surge!" bonus worth 20.</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 02</div>
+        <div class="icn">🗼</div>
+        <h3>Grow the City</h3>
+        <p>Donate Chaos Points to the shared Nova Tower. It's a whole-server project, with a contribution leaderboard.</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 03</div>
+        <div class="icn">🎴</div>
+        <h3>Pull Gacha</h3>
+        <p>Spend coins for character cards and D–S+ grade unique items. Equip, level, and fuse them stronger.</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 04</div>
+        <div class="icn">🎣</div>
+        <h3>Go Fishing</h3>
+        <p>Cast a line at Nova Riverside. A self-contained side loop — fill the fishdex, or flip your catch at the flea market.</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 05</div>
+        <div class="icn">🧭</div>
+        <h3>Dispatch a Team</h3>
+        <p>Send your cards out on an idle expedition. Walk away — the longer you wait, the more you bring back.</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 06</div>
+        <div class="icn">⚔️</div>
+        <h3>Battle</h3>
+        <p>Fight it out in the Arena with lightweight animated duels. The PvP League runs itself, on a schedule.</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 07</div>
+        <div class="icn">🤝</div>
+        <h3>Trade &amp; Connect</h3>
+        <p>Trade, gift, and auction with other players — every path is built with abuse-resistance in mind.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="sec-label reveal">Features</div>
+    <h2 class="sec-title reveal">Economy, gacha, fishing, exploration, combat, social.</h2>
+
+    <div class="feature reveal">
+      <div>
+        <span class="ftag">ECONOMY</span>
+        <h3>The more you contribute, the taller the city grows.</h3>
+        <p>Two currencies with clearly separated roles: Chaos Points (earned by chatting) fund the shared tower, while Coins (from gacha and casino) build your own collection.</p>
+        <ul>
+          <li>1–5 points per comment, 60-second cooldown</li>
+          <li>A rare "Chaos Surge!" bonus grants a flat 20 points</li>
+          <li>Coins can be exchanged from points, but never back (keeps the economy healthy)</li>
+          <li>7 different leaderboards: total &amp; weekly contribution, battle, fishing, and more</li>
+        </ul>
+      </div>
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>Chaos Points (total)</span><span class="v orb">1,240 pt</span></div>
+          <div class="fv-line"><span>Tower Progress</span><span class="v orb">Floor 62</span></div>
+          <div class="fv-line"><span>Exchange Rate</span><span class="v orb">10 pt → 1 coin</span></div>
+          <div class="fv-line"><span>Weekly Leaderboard</span><span class="v orb">Live</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature rev reveal">
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>Pull Breakdown</span><span class="v orb">Item 75% / Character 25%</span></div>
+          <div class="fv-line"><span>Character Rarity</span><span class="v orb">SR 88% / SSR 12%</span></div>
+          <div class="fv-line"><span>Bag Upgrade Ticket</span><span class="v orb">0.6%</span></div>
+          <div class="fv-line"><span>Item Fusion</span><span class="v orb">5 same-grade → 1 grade up</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="ftag">GACHA &amp; CARDS</span>
+        <h3>Pull, equip, and fuse your way up.</h3>
+        <p>100 coins for a single pull, 900 for ten. Duplicate characters raise their level cap, and items can be equipped (up to 2 slots) to boost your stats.</p>
+        <ul>
+          <li>Unique items span 6 grades (D through S+), each with its own individual roll</li>
+          <li>Bag full? Rent a temporary container for +30 slots</li>
+          <li>Fuse 5 items of the same grade into 1 of the next grade up</li>
+          <li>Sell off anything you don't need for coins, in bulk</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature reveal">
+      <div>
+        <span class="ftag">FISHING</span>
+        <h3>A second daily loop, separate from the market.</h3>
+        <p>Cast a line at Nova Riverside. Fill a 100-entry fishdex across two cycles, or sell your catch on the flea market. Tournaments run automatically.</p>
+        <ul>
+          <li>A 0–4 fatigue meter that resets naturally with a short break</li>
+          <li>Filling the fishdex unlocks titles and a sell-price bonus</li>
+          <li>List or buy fish on the flea market, or register caught fish to your dex later</li>
+          <li>A fishing tournament runs automatically every 6 hours, 4 times a day</li>
+        </ul>
+      </div>
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>Cast Cooldown</span><span class="v orb">3–4 min</span></div>
+          <div class="fv-line"><span>Fishdex Complete</span><span class="v orb">100 / 100</span></div>
+          <div class="fv-line"><span>Fatigue</span><span class="v orb">0 / 4</span></div>
+          <div class="fv-line"><span>Tournament</span><span class="v orb">Every 6 hours, automatic</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature rev reveal">
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>Dispatch Length</span><span class="v orb">1 / 4 / 8 hours</span></div>
+          <div class="fv-line"><span>Party Size</span><span class="v orb">Up to 2 cards</span></div>
+          <div class="fv-line"><span>Pity System</span><span class="v orb">3 misses guarantee a "blessing"</span></div>
+          <div class="fv-line"><span>Weekly Raid</span><span class="v orb">Whole server, shared reward</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="ftag">EXPLORATION</span>
+        <h3>Walk away, and come back to more.</h3>
+        <p>Dispatch your cards on a lazily-evaluated idle expedition. Perfect for players who can't stay glued to the screen — the reward scales with how long you waited.</p>
+        <ul>
+          <li>Higher exploration power (gear &amp; level) means a higher success rate</li>
+          <li>Luck stacks the odds for bonus item drops</li>
+          <li>Longer dispatches also raise the quality of bonus drops</li>
+          <li>A weekly server-wide raid pays out once enough expeditions return</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature reveal">
+      <div>
+        <span class="ftag">BATTLE &amp; LEAGUE</span>
+        <h3>Card classes give every matchup a story.</h3>
+        <p>Arena battles apply small bonuses based on class matchups, shown with a lightweight animated duel. The PvP League is a fully automatic, sign-up round-robin tournament.</p>
+        <ul>
+          <li>Friendly duels carry no stakes; ranked matches scale rewards with win streaks</li>
+          <li>The PvP League runs automatically every 12 hours, sign-up required</li>
+          <li>Fixed bonuses for the top 3, plus a participation reward for everyone else</li>
+          <li>6 card classes: Attacker, Defender, Balanced, AoE, Tank, and Boss</li>
+        </ul>
+      </div>
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>Arena Battles</span><span class="v orb">Win-streak scaling</span></div>
+          <div class="fv-line"><span>PvP League</span><span class="v orb">Auto, every 12 hours</span></div>
+          <div class="fv-line"><span>Sign-up Window</span><span class="v orb">Opens 2h before</span></div>
+          <div class="fv-line"><span>Card Classes</span><span class="v orb">6 with matchup bonuses</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature rev reveal">
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>Trade</span><span class="v orb">Escrow-based, safe by design</span></div>
+          <div class="fv-line"><span>Gift</span><span class="v orb">One-way, daily caps apply</span></div>
+          <div class="fv-line"><span>Auction</span><span class="v orb">A–S+ only, soft-close anti-snipe</span></div>
+          <div class="fv-line"><span>Flea Market</span><span class="v orb">Player-to-player fish trading</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="ftag">SOCIAL</span>
+        <h3>The more you connect, the more there is to do.</h3>
+        <p>Four ways to interact with other players — trade, gift, auction, and the flea market — all designed with abuse-resistance built in from day one.</p>
+        <ul>
+          <li>Trades escrow items and coins the moment you offer them, not at the last second</li>
+          <li>Gifts are one-way, with daily caps and an account-age requirement</li>
+          <li>Auctions auto-extend on last-minute bids to prevent sniping</li>
+          <li>The flea market lets players buy and sell caught fish directly</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="commands">
+  <div class="wrap">
+    <div class="sec-label reveal">Getting Started</div>
+    <h2 class="sec-title reveal">You barely need to memorize a thing.</h2>
+    <p class="sec-sub reveal">Everything is built around buttons and dropdown menus, so you're never stuck guessing a command. Start with these 11.</p>
+
+    <div class="cmd-grid">
+      <div class="cmd reveal"><span class="tag orb">/city</span><p>Check the tower's progress, donate Chaos Points, and view the contribution leaderboard.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/gacha</span><p>Spend coins to pull for characters and items. Odds are shown right in the prompt.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/bag</span><p>View your cards and items, then level up, equip, sell, or fuse them.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/fish</span><p>Cast a line at Nova Riverside. Your fishdex, status, titles, shop, and market are one tap away.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/explore</span><p>Send a dispatch team out on an idle expedition. Pick a duration, then just wait.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/battle</span><p>Fight in the Arena. Build your lineup first with `/deck`.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/league</span><p>Check the current PvP League and sign up while registration is open.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/trade</span><p>Exchange items and coins directly with another player.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/gift</span><p>Send coins or items to someone — no confirmation needed on their end.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/casino</span><p>Exchange Chaos Points for coins, or try your luck on the slots.</p></div>
+      <div class="cmd reveal"><span class="tag orb">/help</span><p>Category-by-category guides for gacha, fishing, battle, exploration, and more.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="cta">
+  <div class="wrap">
+    <div class="sec-label reveal">How to Join</div>
+    <h2 class="sec-title reveal">The city is growing right now.</h2>
+    <p class="sec-sub reveal">Chaos Points start piling up the moment you say hello. Join "Infinite Ananta - Official" and send your first message.</p>
+    <div class="cta-buttons reveal">
+      <a class="btn btn1" href="https://discord.gg/FzWsQwyKTG" target="_blank" rel="noopener">Join the Server</a>
+      <a class="btn btn2" href="#commands">See All Commands</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; width:100%;">
+    <span class="fmark">🌆 Infinite Ananta</span>
+    <span>Discord Bot Project</span>
+  </div>
+</footer>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>

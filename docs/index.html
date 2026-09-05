@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>無限大Ananta — チャットするだけで育つ、街づくり生活シム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e14;
+    --bg2:#0e151d;
+    --card:#121a24;
+    --card2:#0e151d;
+    --line:#1e2a38;
+    --text:#eef7f8;
+    --dim:#9fb4c0;
+    --dim2:#5d7280;
+    --brand:#00b7c3;
+    --brand-glow:#4dd8e0;
+    --chaos:#9b59b6;
+    --chaos-glow:#c77ee0;
+    --gold:#f2c14e;
+    --gold-deep:#e0a730;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Zen Maru Gothic', sans-serif;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(0,183,195,.14), transparent 45%),
+      radial-gradient(circle at 85% 0%, rgba(155,89,182,.12), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+  }
+  .orb{font-family:'Orbitron', sans-serif;}
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ───── NAV ───── */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    background:rgba(10,14,20,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{ max-width:1180px; margin:0 auto; padding:16px 32px; display:flex; align-items:center; justify-content:space-between;}
+  .brand{font-family:'Orbitron'; font-weight:900; font-size:1.05rem; color:var(--text); display:flex; gap:10px; align-items:center; letter-spacing:.02em;}
+  .brand .icon{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg, var(--brand), var(--chaos));
+    display:flex;align-items:center;justify-content:center;font-size:1.05rem;
+  }
+  .navlinks{display:flex; gap:28px; font-weight:700; color:var(--dim); font-size:0.86rem; align-items:center;}
+  .navlinks a:hover{color:var(--brand-glow);}
+  .navlang{border:1px solid var(--line); border-radius:20px; padding:5px 12px; font-size:0.76rem; font-weight:700;}
+  .navlang:hover{border-color:var(--brand);}
+  .navcta{
+    background:linear-gradient(90deg, var(--brand), var(--chaos)); color:#071016; border:none; padding:10px 20px; border-radius:12px;
+    font-weight:900; font-size:0.84rem;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .navcta:hover{transform:translateY(-1px); box-shadow:0 6px 20px -6px rgba(0,183,195,.6);}
+  @media (max-width:860px){ .navlinks a:not(.navlang){display:none;} }
+
+  /* ───── HERO ───── */
+  .hero{
+    min-height:94vh;
+    position:relative; overflow:hidden;
+    padding:150px 0 0;
+  }
+  .stars{position:absolute; inset:0; z-index:0; pointer-events:none;
+    background-image:radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.5), transparent),
+      radial-gradient(2px 2px at 70% 15%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1.5px 1.5px at 85% 55%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,.3), transparent),
+      radial-gradient(2px 2px at 55% 40%, rgba(255,255,255,.3), transparent);
+    opacity:.7;
+  }
+  .hero-grid{display:flex; align-items:center; gap:56px; position:relative; z-index:3; padding-bottom:70px;}
+  @media (max-width:900px){ .hero-grid{flex-direction:column; align-items:flex-start;} }
+
+  .lcol{flex:1; opacity:0; animation:rise .7s ease forwards .1s;}
+  .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(0,183,195,.1); border:1px solid rgba(0,183,195,.4); padding:7px 16px; border-radius:999px;
+    font-size:0.78rem; font-weight:700; color:var(--brand-glow); margin-bottom:24px;
+  }
+  .hero h1{
+    font-size:clamp(2.1rem, 4.2vw, 3rem); line-height:1.55; color:var(--text); font-weight:900;
+  }
+  .hero h1 .accent{
+    background:linear-gradient(90deg, var(--brand-glow), var(--chaos-glow));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p.lead{
+    margin-top:22px; font-size:1.02rem; line-height:1.95; color:var(--dim); font-weight:700; max-width:44ch;
+  }
+  .ctas{display:flex; gap:14px; margin-top:32px; flex-wrap:wrap;}
+  .btn{
+    font-weight:900; padding:15px 28px; border-radius:14px; font-size:0.94rem; border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn1{background:linear-gradient(90deg, var(--brand), var(--chaos)); color:#071016;}
+  .btn1:hover{transform:translateY(-2px); box-shadow:0 10px 30px -8px rgba(0,183,195,.55);}
+  .btn2{background:rgba(255,255,255,.04); color:var(--text); border-color:var(--line);}
+  .btn2:hover{border-color:var(--brand); transform:translateY(-2px);}
+
+  .stats{display:flex; gap:34px; margin-top:44px; flex-wrap:wrap;}
+  .stat b{font-family:'Orbitron'; font-size:1.4rem; color:var(--brand-glow); display:block;}
+  .stat span{font-size:0.76rem; color:var(--dim2); font-weight:700;}
+
+  .rcol{flex:1; position:relative; opacity:0; animation:rise .8s ease forwards .25s; padding-top:10px;}
+  .shelf{
+    background:linear-gradient(160deg, var(--card), var(--card2)); border:1px solid var(--line); border-radius:18px;
+    padding:24px; box-shadow:0 20px 60px -20px rgba(0,0,0,.6);
+    position:relative; z-index:2; margin-top:14px; overflow:hidden;
+  }
+  .shelf::before{content:""; position:absolute; inset:0 0 auto 0; height:3px; background:linear-gradient(90deg, var(--brand), var(--chaos)); opacity:.9;}
+  .shelf-label{font-family:'Orbitron'; font-size:0.72rem; color:var(--dim); margin-bottom:14px; letter-spacing:.05em;}
+  .shelf-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
+  .item{
+    aspect-ratio:1; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:1.6rem;
+    transition:transform .2s ease;
+  }
+  .item:hover{transform:scale(1.08); border-color:var(--brand);}
+  .tower-float{position:absolute; bottom:-30px; right:-10px; font-size:4rem; z-index:1; animation:bob 4s ease-in-out infinite; opacity:.9;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  @keyframes rise{from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);}}
+
+  .reveal{opacity:0; transform:translateY(22px); transition:opacity .65s ease, transform .65s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ───── LOOP ───── */
+  section{padding:104px 0;}
+  .sec-label{
+    display:inline-block; font-family:'Orbitron'; font-size:0.72rem; color:var(--brand-glow);
+    background:rgba(0,183,195,.1); padding:6px 16px; border-radius:999px; margin-bottom:20px; letter-spacing:.04em;
+  }
+  .sec-title{
+    font-size:clamp(1.6rem, 3vw, 2.2rem); line-height:1.55; max-width:24ch; color:var(--text); font-weight:900;
+  }
+  .sec-sub{margin-top:18px; font-size:0.98rem; line-height:1.9; color:var(--dim); max-width:58ch; font-weight:500;}
+
+  .loop-grid{margin-top:56px; display:grid; grid-template-columns:repeat(4,1fr); gap:22px;}
+  @media (max-width:920px){ .loop-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:540px){ .loop-grid{grid-template-columns:1fr;} }
+  .loop-card{
+    background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .loop-card:hover{transform:translateY(-3px); border-color:var(--brand);}
+  .loop-card .stage{font-family:'Orbitron'; font-size:0.68rem; color:var(--dim2); letter-spacing:.05em;}
+  .loop-card .icn{
+    width:52px;height:52px; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:12px;
+    display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:14px 0 14px;
+  }
+  .loop-card h3{font-size:1.02rem; margin-bottom:10px; color:var(--text); font-weight:900;}
+  .loop-card p{font-size:0.84rem; line-height:1.8; color:var(--dim); font-weight:500;}
+
+  /* ───── FEATURES ───── */
+  .features{background:var(--bg2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .feature{display:flex; align-items:center; gap:60px; padding:60px 0;}
+  .feature.rev{flex-direction:row-reverse;}
+  @media (max-width:900px){ .feature, .feature.rev{flex-direction:column;} }
+  .feature > div{flex:1;}
+  .ftag{
+    display:inline-block; font-family:'Orbitron'; font-size:0.66rem; color:#071016;
+    background:var(--gold); padding:5px 14px; border-radius:999px; margin-bottom:16px; letter-spacing:.05em; font-weight:900;
+  }
+  .feature h3{font-size:1.32rem; line-height:1.6; margin-bottom:16px; color:var(--text); font-weight:900;}
+  .feature p{font-size:0.92rem; line-height:1.9; color:var(--dim); font-weight:500;}
+  .feature ul{margin-top:18px; display:flex; flex-direction:column; gap:10px;}
+  .feature li{font-size:0.86rem; color:var(--dim); display:flex; gap:10px; font-weight:700;}
+  .feature li::before{content:"◆"; font-size:0.62rem; color:var(--brand-glow); margin-top:5px;}
+
+  .visual-card{
+    background:var(--card); border:1px solid var(--line); border-radius:20px; padding:24px; position:relative; overflow:hidden;
+  }
+  .visual-card::before{content:""; position:absolute; inset:0 0 auto 0; height:3px; background:linear-gradient(90deg, var(--brand), var(--chaos)); opacity:.85;}
+  .fv-line{display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px dashed var(--line); font-size:0.86rem; font-weight:700; color:var(--dim);}
+  .fv-line:last-child{border-bottom:none;}
+  .fv-line .v{font-family:'Orbitron'; color:var(--brand-glow); font-weight:700;}
+
+  /* ───── COMMANDS ───── */
+  .cmd-grid{margin-top:56px; display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media (max-width:880px){ .cmd-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .cmd-grid{grid-template-columns:1fr;} }
+  .cmd{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; transition:transform .2s ease, border-color .2s ease;}
+  .cmd:hover{transform:translateY(-2px); border-color:var(--chaos);}
+  .cmd .tag{font-family:'Orbitron'; font-size:0.86rem; color:var(--brand-glow); margin-bottom:8px; display:block; font-weight:700;}
+  .cmd p{font-size:0.8rem; color:var(--dim); line-height:1.7; font-weight:500;}
+
+  /* ───── CTA ───── */
+  .cta-section{text-align:center; background:linear-gradient(180deg, var(--bg), var(--bg2)); border-top:1px solid var(--line);}
+  .cta-section .sec-label, .cta-section .sec-title, .cta-section .sec-sub{margin-left:auto; margin-right:auto;}
+  .cta-section .sec-title{max-width:20ch;}
+  .cta-buttons{display:flex; gap:16px; justify-content:center; margin-top:34px; flex-wrap:wrap;}
+
+  footer{border-top:1px solid var(--line); padding:36px 0; display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; font-size:0.78rem; color:var(--dim2); font-weight:700;}
+  .fmark{font-family:'Orbitron'; color:var(--dim); font-weight:700;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="icon">🌆</span>無限大Ananta</div>
+    <div class="navlinks">
+      <a href="#loop">遊び方</a>
+      <a href="#features">できること</a>
+      <a href="#commands">コマンド</a>
+      <a class="navlang" href="./en/">EN</a>
+    </div>
+    <a class="navcta" href="#cta">参加する</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="stars"></div>
+  <div class="wrap hero-grid">
+    <div class="lcol">
+      <div class="badge">🌀 Discordコミュニティ製・24時間自動進行</div>
+      <h1>チャットするだけで、<br>街は<span class="accent">無限に</span>育っていく。</h1>
+      <p class="lead">貢献ポイントで塔を伸ばし、ガチャでカードを集め、釣って、探索して、戦う。ひとつのDiscordサーバーの中で完結する、無限大Anantaの街づくり生活シム。</p>
+      <div class="ctas">
+        <a class="btn btn1" href="#cta">今すぐ参加する</a>
+        <a class="btn btn2" href="#loop">遊び方を見る</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>2通貨</b><span>カオスpt・コインの二重経済</span></div>
+        <div class="stat"><b>100種</b><span>ガチャ産カード・図鑑コンテンツ</span></div>
+        <div class="stat"><b>24時間</b><span>自動進行するイベント・釣り大会</span></div>
+      </div>
+    </div>
+    <div class="rcol">
+      <div class="shelf">
+        <div class="shelf-label orb">🎴 GACHA POOL</div>
+        <div class="shelf-grid">
+          <div class="item">🎴</div><div class="item">🗡️</div><div class="item">🛡️</div><div class="item">💍</div>
+          <div class="item">🎩</div><div class="item">🔮</div><div class="item">🏆</div><div class="item">🪙</div>
+        </div>
+      </div>
+      <div class="tower-float">🗼</div>
+    </div>
+  </div>
+</header>
+
+<section id="loop">
+  <div class="wrap">
+    <div class="sec-label reveal">無限大の一日</div>
+    <h2 class="sec-title reveal">話す、育てる、引く、送る、稼ぐ。</h2>
+    <p class="sec-sub reveal">無限大Anantaの遊びは止まらない。チャットで貯まるカオスptが街を伸ばし、ガチャで得たカードを探索やバトルに使い、余ったアイテムは交流や整理で循環していく。</p>
+
+    <div class="loop-grid">
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 01</div>
+        <div class="icn">💬</div>
+        <h3>チャットする</h3>
+        <p>発言するだけでカオスptが貯まる。1〜5pt/コメント、まれに「カオス発生！」で一撃20pt。</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 02</div>
+        <div class="icn">🗼</div>
+        <h3>街を育てる</h3>
+        <p>貯めたカオスptをNovaタワーに寄付。サーバーみんなで積み上げる共同建築、貢献度ランキングも。</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 03</div>
+        <div class="icn">🎴</div>
+        <h3>ガチャを引く</h3>
+        <p>コインでキャラカードとD〜S+のユニークアイテムを狙う。装備・レベル育成・合成でさらに強く。</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 04</div>
+        <div class="icn">🎣</div>
+        <h3>釣る</h3>
+        <p>新啓河岸で釣り糸を垂らす。市場とは独立した、図鑑埋めとフリマ取引の日常コンテンツ。</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 05</div>
+        <div class="icn">🧭</div>
+        <h3>探索に出す</h3>
+        <p>育てたカードを派遣する遅延評価型のアイドルコンテンツ。放っておくだけで、待った分だけ育つ。</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 06</div>
+        <div class="icn">⚔️</div>
+        <h3>戦う</h3>
+        <p>アリーナで軽量演出付きのカードバトル。PvPリーグ戦は自動開催の総当たり戦。</p>
+      </div>
+      <div class="loop-card reveal">
+        <div class="stage orb">STAGE 07</div>
+        <div class="icn">🤝</div>
+        <h3>交流する</h3>
+        <p>トレード・ギフト・オークションでプレイヤー同士のやり取りが生まれる、安全設計の交流機能。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="sec-label reveal">できること</div>
+    <h2 class="sec-title reveal">経済・ガチャ・釣り・探索・対戦・交流。</h2>
+
+    <div class="feature reveal">
+      <div>
+        <span class="ftag">ECONOMY</span>
+        <h3>貢献するほど、街が伸びていく。</h3>
+        <p>カオスpt(チャット由来)とコイン(ガチャ・カジノ用)の二重経済。カオスptは街の共同建築に、コインは自分のコレクションに使う、役割のはっきりした設計。</p>
+        <ul>
+          <li>1〜5pt/コメント、60秒クールタイム</li>
+          <li>まれに「カオス発生！」ボーナスで一撃20pt</li>
+          <li>コイン→ptには戻せない片道両替(健全性重視)</li>
+          <li>累計貢献・週間貢献・バトル・釣果など7種のランキング</li>
+        </ul>
+      </div>
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>カオスpt(累計貢献)</span><span class="v orb">1,240pt</span></div>
+          <div class="fv-line"><span>タワー進捗</span><span class="v orb">62F</span></div>
+          <div class="fv-line"><span>両替レート</span><span class="v orb">10pt→1コイン</span></div>
+          <div class="fv-line"><span>週間貢献ランキング</span><span class="v orb">更新中</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature rev reveal">
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>排出内訳</span><span class="v orb">アイテム75% / キャラ25%</span></div>
+          <div class="fv-line"><span>キャラレア度</span><span class="v orb">SR 88% / SSR 12%</span></div>
+          <div class="fv-line"><span>かばん拡張チケット</span><span class="v orb">0.6%</span></div>
+          <div class="fv-line"><span>アイテム合成</span><span class="v orb">同グレード5個→1段階UP</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="ftag">GACHA &amp; CARDS</span>
+        <h3>引いて、装備して、合成する。</h3>
+        <p>1連100コイン・10連900コイン。キャラは被り(凸)でレベル上限が拡張し、アイテムは2枠まで装備してステータスを強化できる。</p>
+        <ul>
+          <li>ユニークアイテムはD〜S+の6グレード、個体値つき</li>
+          <li>かばんが満杯でもレンタルコンテナで一時的に+30枠</li>
+          <li>同グレード5個を合成して1段階上のグレードへ</li>
+          <li>いらないアイテムはまとめて売却してコインに</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature reveal">
+      <div>
+        <span class="ftag">FISHING</span>
+        <h3>市場とは別の、もうひとつの日常。</h3>
+        <p>新啓河岸で釣り糸を垂らす。2周回・計100種の図鑑を埋めるか、フリマでその場で売るか。定期釣り大会も自動開催。</p>
+        <ul>
+          <li>疲労度0〜4段階、休めば自然にリセット</li>
+          <li>図鑑を埋めるほど称号・売値ボーナスが付く</li>
+          <li>フリマで魚を出品・購入、確保して図鑑登録も可能</li>
+          <li>6時間ごと・1日4回の定期釣り大会が自動開催</li>
+        </ul>
+      </div>
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>釣行クールタイム</span><span class="v orb">3〜4分</span></div>
+          <div class="fv-line"><span>図鑑コンプリート</span><span class="v orb">100 / 100種</span></div>
+          <div class="fv-line"><span>疲労度</span><span class="v orb">0 / 4</span></div>
+          <div class="fv-line"><span>定期釣り大会</span><span class="v orb">6時間ごと自動開催</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature rev reveal">
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>派遣時間</span><span class="v orb">1 / 4 / 8時間</span></div>
+          <div class="fv-line"><span>派遣人数</span><span class="v orb">最大2体</span></div>
+          <div class="fv-line"><span>連続アクシデント</span><span class="v orb">3連続で次回「祝福」確定</span></div>
+          <div class="fv-line"><span>週替りレイド</span><span class="v orb">サーバー全体で協力</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="ftag">EXPLORATION</span>
+        <h3>放っておくだけで、育った分だけ返ってくる。</h3>
+        <p>育てたカードを派遣する遅延評価型のアイドルコンテンツ。張り付いていられない人でも、待った時間の分だけコイン・ボーナスアイテムが積み上がる。</p>
+        <ul>
+          <li>探索力(装備・レベル)が高いほど成功率が上がる</li>
+          <li>幸運(luck)が高いほどボーナスドロップの当選機会が増える</li>
+          <li>長時間派遣ほどアイテムのグレードも底上げ</li>
+          <li>週替りでサーバー全体の帰還数がしきい値を超えると全員に報酬</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature reveal">
+      <div>
+        <span class="ftag">BATTLE &amp; LEAGUE</span>
+        <h3>カードクラスで挑む、対戦コンテンツ。</h3>
+        <p>アリーナバトルは6クラスの相性で小さな補正がつく、軽量演出付きの対戦。PvPリーグ戦は登録制の自動開催・総当たり戦。</p>
+        <ul>
+          <li>フレンドリー対戦は賭けなし、トロフィー戦は連勝でスケーリング</li>
+          <li>PvPリーグ戦は12時間ごとに自動開催、事前登録制</li>
+          <li>1〜3位に固定ボーナス、参加者全員に参加賞</li>
+          <li>攻撃・防御・バランス・範囲・盾役・ボスの6クラス</li>
+        </ul>
+      </div>
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>アリーナバトル</span><span class="v orb">連勝スケーリング制</span></div>
+          <div class="fv-line"><span>PvPリーグ戦</span><span class="v orb">12時間ごと自動開催</span></div>
+          <div class="fv-line"><span>登録受付</span><span class="v orb">開催2時間前から</span></div>
+          <div class="fv-line"><span>カードクラス</span><span class="v orb">6種の相性補正</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature rev reveal">
+      <div>
+        <div class="visual-card">
+          <div class="fv-line"><span>トレード</span><span class="v orb">エスクロー方式・安全設計</span></div>
+          <div class="fv-line"><span>ギフト</span><span class="v orb">一方通行・日次上限あり</span></div>
+          <div class="fv-line"><span>オークション</span><span class="v orb">A〜S+限定・ソフトクローズ</span></div>
+          <div class="fv-line"><span>フリマ</span><span class="v orb">釣果の個人間取引</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="ftag">SOCIAL</span>
+        <h3>交流するほど、遊びが広がる。</h3>
+        <p>トレード・ギフト・オークション・フリマの4つの交流機能。いずれも安全性を重視した設計で、サブ垢を使った悪用にも対策済み。</p>
+        <ul>
+          <li>トレードは提示した瞬間に手元から退避するエスクロー方式</li>
+          <li>ギフトは一方通行、日次上限とアカウント経過時間で健全性を確保</li>
+          <li>オークションは残り2分の入札で自動延長するソフトクローズ</li>
+          <li>フリマは釣った魚をプレイヤー間で売買できる市場</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="commands">
+  <div class="wrap">
+    <div class="sec-label reveal">最初の一歩</div>
+    <h2 class="sec-title reveal">覚えるコマンドは、少しでいい。</h2>
+    <p class="sec-sub reveal">ボタンとプルダウンで進められるUI設計なので、コマンド名を覚えていなくても迷わない。まずはこの11個から。</p>
+
+    <div class="cmd-grid">
+      <div class="cmd reveal"><span class="tag orb">/タワー</span><p>街の進捗確認・カオスpt寄付・貢献度ランキングをまとめて操作。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/ガチャ</span><p>コインでガチャを回してキャラ・アイテムを狙う。排出確率も画面内で確認可能。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/かばん</span><p>所持カード・アイテムの確認、育成・装備・整理・合成をまとめて操作。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/釣り</span><p>新啓河岸で釣り糸を垂らす。図鑑・状態・称号・釣具屋・フリマもここから。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/探索</span><p>カードを派遣してアイドル探索。派遣時間を選んで、あとは待つだけ。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/バトル</span><p>アリーナで対戦。デッキ編成は`/デッキ`から。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/リーグ</span><p>現在開催中のPvPリーグ戦を確認・参加登録。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/トレード</span><p>2人のユーザーが直接アイテム・コインを交換。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/ギフト</span><p>相手の確認不要でコイン・アイテムを一方的に贈れる。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/カジノ</span><p>カオスptをコインに両替、スロットも遊べる。</p></div>
+      <div class="cmd reveal"><span class="tag orb">/ヘルプ</span><p>ガチャ・釣り・バトル・探索まで、カテゴリ別の解説ガイド。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="cta">
+  <div class="wrap">
+    <div class="sec-label reveal">参加方法</div>
+    <h2 class="sec-title reveal">街は、今この瞬間も育っている。</h2>
+    <p class="sec-sub reveal">カオスptはチャットするだけで貯まり始める。「無限大Ananta - 公式」サーバーに参加して、最初の一言を送ってみよう。</p>
+    <div class="cta-buttons reveal">
+      <a class="btn btn1" href="https://discord.gg/FzWsQwyKTG" target="_blank" rel="noopener">サーバーに参加する</a>
+      <a class="btn btn2" href="#commands">コマンド一覧を見る</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; width:100%;">
+    <span class="fmark">🌆 無限大Ananta</span>
+    <span>Discord Bot Project</span>
+  </div>
+</footer>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
