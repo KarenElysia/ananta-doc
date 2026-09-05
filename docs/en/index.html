@@ -9,28 +9,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0e14;
-    --bg2:#0e151d;
-    --card:#121a24;
-    --card2:#0e151d;
-    --line:#1e2a38;
-    --text:#eef7f8;
-    --dim:#9fb4c0;
-    --dim2:#5d7280;
-    --brand:#00b7c3;
-    --brand-glow:#4dd8e0;
-    --chaos:#9b59b6;
-    --chaos-glow:#c77ee0;
-    --gold:#f2c14e;
-    --gold-deep:#e0a730;
+    --bg:#f4faff;
+    --bg2:#e9f4fc;
+    --card:#ffffff;
+    --card2:#f3f9fd;
+    --line:#d7e8f2;
+    --text:#132c40;
+    --dim:#4d6d82;
+    --dim2:#5f7d90;
+    --brand:#1f93d6;
+    --brand-glow:#0e6f9e;
+    --chaos:#f2653c;
+    --chaos-glow:#c2481e;
+    --gold:#ffc93c;
+    --gold-deep:#b9860a;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   body{
     font-family:'Nunito', sans-serif;
     background:
-      radial-gradient(circle at 15% -10%, rgba(0,183,195,.14), transparent 45%),
-      radial-gradient(circle at 85% 0%, rgba(155,89,182,.12), transparent 40%),
+      radial-gradient(circle at 15% -10%, rgba(31,147,214,.12), transparent 45%),
+      radial-gradient(circle at 85% 0%, rgba(242,101,60,.10), transparent 40%),
       var(--bg);
     color:var(--text);
     overflow-x:hidden;
@@ -47,7 +47,7 @@
   /* ───── NAV ───── */
   .nav{
     position:fixed; top:0; left:0; right:0; z-index:50;
-    background:rgba(10,14,20,0.82);
+    background:rgba(255,255,255,.78);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
   }
@@ -63,11 +63,11 @@
   .navlang{border:1px solid var(--line); border-radius:20px; padding:5px 12px; font-size:0.76rem; font-weight:800;}
   .navlang:hover{border-color:var(--brand);}
   .navcta{
-    background:linear-gradient(90deg, var(--brand), var(--chaos)); color:#071016; border:none; padding:10px 20px; border-radius:12px;
+    background:linear-gradient(90deg, var(--brand), var(--chaos)); color:#ffffff; border:none; padding:10px 20px; border-radius:12px;
     font-weight:900; font-size:0.84rem;
     transition:transform .15s ease, box-shadow .15s ease;
   }
-  .navcta:hover{transform:translateY(-1px); box-shadow:0 6px 20px -6px rgba(0,183,195,.6);}
+  .navcta:hover{transform:translateY(-1px); box-shadow:0 6px 20px -6px rgba(31,147,214,.4);}
   @media (max-width:860px){ .navlinks a:not(.navlang){display:none;} }
 
   /* ───── HERO ───── */
@@ -76,13 +76,12 @@
     position:relative; overflow:hidden;
     padding:150px 0 0;
   }
-  .stars{position:absolute; inset:0; z-index:0; pointer-events:none;
-    background-image:radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.5), transparent),
-      radial-gradient(2px 2px at 70% 15%, rgba(255,255,255,.35), transparent),
-      radial-gradient(1.5px 1.5px at 85% 55%, rgba(255,255,255,.4), transparent),
-      radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,.3), transparent),
-      radial-gradient(2px 2px at 55% 40%, rgba(255,255,255,.3), transparent);
-    opacity:.7;
+  .sky-deco{position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(380px 220px at 84% 6%, rgba(255,180,120,.45), transparent 70%),
+      radial-gradient(440px 260px at 6% 28%, rgba(120,196,255,.4), transparent 70%),
+      radial-gradient(280px 160px at 55% 90%, rgba(255,255,255,.7), transparent 70%);
+    filter:blur(1px);
   }
   .hero-grid{display:flex; align-items:center; gap:56px; position:relative; z-index:3; padding-bottom:70px;}
   @media (max-width:900px){ .hero-grid{flex-direction:column; align-items:flex-start;} }
@@ -90,7 +89,7 @@
   .lcol{flex:1; opacity:0; animation:rise .7s ease forwards .1s;}
   .badge{
     display:inline-flex; align-items:center; gap:8px;
-    background:rgba(0,183,195,.1); border:1px solid rgba(0,183,195,.4); padding:7px 16px; border-radius:999px;
+    background:rgba(31,147,214,.10); border:1px solid rgba(31,147,214,.35); padding:7px 16px; border-radius:999px;
     font-size:0.78rem; font-weight:800; color:var(--brand-glow); margin-bottom:24px;
   }
   .hero h1{
@@ -108,9 +107,9 @@
     font-weight:900; padding:15px 28px; border-radius:14px; font-size:0.94rem; border:1px solid transparent;
     transition:transform .15s ease, box-shadow .15s ease;
   }
-  .btn1{background:linear-gradient(90deg, var(--brand), var(--chaos)); color:#071016;}
-  .btn1:hover{transform:translateY(-2px); box-shadow:0 10px 30px -8px rgba(0,183,195,.55);}
-  .btn2{background:rgba(255,255,255,.04); color:var(--text); border-color:var(--line);}
+  .btn1{background:linear-gradient(90deg, var(--brand), var(--chaos)); color:#ffffff;}
+  .btn1:hover{transform:translateY(-2px); box-shadow:0 10px 30px -8px rgba(31,147,214,.4);}
+  .btn2{background:var(--card); color:var(--text); border-color:var(--line);}
   .btn2:hover{border-color:var(--brand); transform:translateY(-2px);}
 
   .stats{display:flex; gap:34px; margin-top:44px; flex-wrap:wrap;}
@@ -120,14 +119,14 @@
   .rcol{flex:1; position:relative; opacity:0; animation:rise .8s ease forwards .25s; padding-top:10px;}
   .shelf{
     background:linear-gradient(160deg, var(--card), var(--card2)); border:1px solid var(--line); border-radius:18px;
-    padding:24px; box-shadow:0 20px 60px -20px rgba(0,0,0,.6);
+    padding:24px; box-shadow:0 20px 50px -22px rgba(23,50,74,.16);
     position:relative; z-index:2; margin-top:14px; overflow:hidden;
   }
   .shelf::before{content:""; position:absolute; inset:0 0 auto 0; height:3px; background:linear-gradient(90deg, var(--brand), var(--chaos)); opacity:.9;}
   .shelf-label{font-family:'Orbitron'; font-size:0.72rem; color:var(--dim); margin-bottom:14px; letter-spacing:.05em;}
   .shelf-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
   .item{
-    aspect-ratio:1; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:10px;
+    aspect-ratio:1; background:rgba(31,147,214,.10); border:1px solid rgba(31,147,214,.2); border-radius:10px;
     display:flex; align-items:center; justify-content:center; font-size:1.6rem;
     transition:transform .2s ease;
   }
@@ -143,7 +142,7 @@
   section{padding:104px 0;}
   .sec-label{
     display:inline-block; font-family:'Orbitron'; font-size:0.72rem; color:var(--brand-glow);
-    background:rgba(0,183,195,.1); padding:6px 16px; border-radius:999px; margin-bottom:20px; letter-spacing:.04em;
+    background:rgba(31,147,214,.10); padding:6px 16px; border-radius:999px; margin-bottom:20px; letter-spacing:.04em;
   }
   .sec-title{
     font-size:clamp(1.6rem, 3vw, 2.2rem); line-height:1.4; max-width:24ch; color:var(--text); font-weight:900;
@@ -155,12 +154,13 @@
   @media (max-width:540px){ .loop-grid{grid-template-columns:1fr;} }
   .loop-card{
     background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px;
-    transition:transform .2s ease, border-color .2s ease;
+    box-shadow:0 14px 34px -22px rgba(23,50,74,.18);
+    transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
   }
-  .loop-card:hover{transform:translateY(-3px); border-color:var(--brand);}
+  .loop-card:hover{transform:translateY(-3px); border-color:var(--brand); box-shadow:0 18px 40px -20px rgba(31,147,214,.28);}
   .loop-card .stage{font-family:'Orbitron'; font-size:0.68rem; color:var(--dim2); letter-spacing:.05em;}
   .loop-card .icn{
-    width:52px;height:52px; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:12px;
+    width:52px;height:52px; background:rgba(31,147,214,.06); border:1px solid var(--line); border-radius:12px;
     display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:14px 0 14px;
   }
   .loop-card h3{font-size:1.02rem; margin-bottom:10px; color:var(--text); font-weight:900;}
@@ -184,6 +184,7 @@
 
   .visual-card{
     background:var(--card); border:1px solid var(--line); border-radius:20px; padding:24px; position:relative; overflow:hidden;
+    box-shadow:0 16px 40px -24px rgba(23,50,74,.2);
   }
   .visual-card::before{content:""; position:absolute; inset:0 0 auto 0; height:3px; background:linear-gradient(90deg, var(--brand), var(--chaos)); opacity:.85;}
   .fv-line{display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px dashed var(--line); font-size:0.85rem; font-weight:700; color:var(--dim); gap:12px;}
@@ -194,8 +195,8 @@
   .cmd-grid{margin-top:56px; display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
   @media (max-width:880px){ .cmd-grid{grid-template-columns:1fr 1fr;} }
   @media (max-width:560px){ .cmd-grid{grid-template-columns:1fr;} }
-  .cmd{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; transition:transform .2s ease, border-color .2s ease;}
-  .cmd:hover{transform:translateY(-2px); border-color:var(--chaos);}
+  .cmd{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; box-shadow:0 12px 28px -20px rgba(23,50,74,.16); transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;}
+  .cmd:hover{transform:translateY(-2px); border-color:var(--chaos); box-shadow:0 16px 34px -18px rgba(242,101,60,.22);}
   .cmd .tag{font-family:'Orbitron'; font-size:0.84rem; color:var(--brand-glow); margin-bottom:8px; display:block; font-weight:700;}
   .cmd p{font-size:0.82rem; color:var(--dim); line-height:1.65; font-weight:600;}
 
@@ -225,7 +226,7 @@
 </nav>
 
 <header class="hero">
-  <div class="stars"></div>
+  <div class="sky-deco"></div>
   <div class="wrap hero-grid">
     <div class="lcol">
       <div class="badge">🌀 Built for Discord · Runs 24/7, automatically</div>
